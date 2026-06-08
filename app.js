@@ -101,7 +101,8 @@ function convertFileToBase64(file) {
 
 async function evaluateAudioWithGemini(apiKey, taskInstructions, base64Data, mimeType, studentName) {
     // URL oficial de Gemini 1.5 Flash para procesamiento rápido de contenido multimodal
-    const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+    // REEMPLAZA TU LÍNEA DE URL ACTUAL POR ESTA:
+const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
 
     const promptText = `
 Actúa como un evaluador experto de inglés nivel A2 según el MCER. Vas a escuchar el archivo de audio adjunto.
