@@ -40,7 +40,7 @@ fileInput.addEventListener('change', (event) => {
     }
 });
 
-// --- 3. BUCLE DE EVALUACIÓN SECUENCIAL (PROCESAMIENTO DIRECTO) ---
+// --- 3. BUCLE DE EVALUACIÓN SECUENCIAL ---
 btnEvaluate.addEventListener('click', async () => {
     const apiKey = apiKeyInput.value.trim();
     const taskInstructions = taskInstructionsInput.value.trim();
@@ -58,7 +58,6 @@ btnEvaluate.addEventListener('click', async () => {
         statusText.innerText = `Evaluando de forma nativa ${i + 1} de ${selectedFiles.length}: ${file.name}...`;
 
         try {
-            // Convertir el audio a Base64 para mandarlo directo a la IA
             const base64Audio = await convertFileToBase64(file);
             
             // Limpiar el nombre del estudiante desde el archivo
@@ -66,18 +65,17 @@ btnEvaluate.addEventListener('click', async () => {
             let cleanName = fileNameWithoutExt.replace(/[_-]/g, ' ');
             let studentName = cleanName.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
 
-            // Generar URL local para reproducir el audio en la tabla
             const audioUrl = URL.createObjectURL(file);
 
-            // Llamar a Gemini 1.5 Flash (Análisis de Audio Nativo con Endpoint definitivo)
-            const evaluation = await evaluateAudioWithGemini(apiKey, taskInstructions, base64Audio, file.type, studentName);
+            // Llamar a Gemini 2.5 Flash
+            const feedbackText = await evaluateAudioWithGemini(apiKey, taskInstructions, base64Audio, file.type, studentName);
 
-            // Insertar fila en la tabla
-            appendAudioResultRow(studentName, audioUrl, evaluation.veredicto, evaluation.cleanText);
+            // Insertar fila en la tabla (Ya no pasamos ni mostramos veredicto)
+            appendAudioResultRow(studentName, audioUrl, feedbackText);
 
         } catch (error) {
             console.error(error);
-            appendAudioResultRow(file.name, "", "ERROR", `Error al procesar: ${error.message}`);
+            appendAudioResultRow(file.name, "", `Error al procesar: ${error.message}`);
         }
     }
 
@@ -100,7 +98,6 @@ function convertFileToBase64(file) {
 }
 
 async function evaluateAudioWithGemini(apiKey, taskInstructions, base64Data, mimeType, studentName) {
-    // URL Corregida de forma definitiva para evitar el error de modelo no encontrado
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
     const promptText = `
@@ -109,6 +106,8 @@ Actúa como un evaluador experto de inglés nivel A2 según el MCER. Vas a escuc
 IMPORTANTE:
 - Analiza de forma nativa el contenido hablado, pero también aspectos acústicos como la fluidez (pausas, titubeos, ritmo) y la velocidad apropiada para el nivel A2.
 - El nombre del estudiante es: "${studentName}".
+- Tu tono debe ser extremadamente motivador, empático y pedagógico.
+- NO incluyas clasificaciones de nivel, notas o veredictos globales. Ve directo al grano con el formato solicitado.
 
 ## TAREA ASIGNADA
 ${taskInstructions}
@@ -118,18 +117,11 @@ ${taskInstructions}
 2. Fluency: ¿El ritmo es constante o hay pausas y titubeos excesivos para nivel A2?
 3. Grammar & Vocabulary: ¿Las estructuras y palabras usadas son correctas para el nivel?
 
-## RESULTADO
-Determina uno de los siguientes resultados: CUMPLE TOTALMENTE, CUMPLE PARCIALMENTE o NO CUMPLE.
-
 Responde EXACTAMENTE con este formato (No agregues introducciones, ve directo a las etiquetas):
 
-VEREDICTO: [CUMPLE TOTALMENTE / CUMPLE PARCIALMENTE / NO CUMPLE]
+Lo bueno: ¡Excelente uso de [mencionar un acierto gramatical, vocabulario o conector usado por el alumno]! Me encantó que [mencionar un comentario positivo, ameno o motivador sobre su esfuerzo o contenido].
 
-### 💪 Lo que haces bien
-(Escribe un único párrafo corto que contenga EXACTAMENTE TRES ORACIONES completas comentando lo positivo de su vocabulario, mensaje o fluidez acústica).
-
-### 🛠️ Lo que puedes mejorar
-(Escribe un único párrafo corto que contenga EXACTAMENTE TRES ORACIONES completas. Señala el error de gramática o el problema de fluidez/pausas más crítico detectado al escucharlo, y dale un consejo directo).
+Para mejorar: Recuerda [explicar el error más crítico de forma simple, ej: ponerle la "s" al verbo cuando hablas de ella]: "[mostrar el ejemplo corregido entre comillas]". ¡Sigue practicando así de bien, vas por excelente camino!
 `;
 
     const payload = {
@@ -157,40 +149,26 @@ VEREDICTO: [CUMPLE TOTALMENTE / CUMPLE PARCIALMENTE / NO CUMPLE]
     }
 
     const data = await response.json();
-    const rawContent = data.candidates[0].content.parts[0].text.trim();
-
-    // Extraer Veredicto
-    let veredicto = "CUMPLE PARCIALMENTE";
-    if (rawContent.includes("CUMPLE TOTALMENTE")) veredicto = "CUMPLE TOTALMENTE";
-    else if (rawContent.includes("NO CUMPLE")) veredicto = "NO CUMPLE";
-
-    // Remover la línea del veredicto para dejar solo el feedback de 3 oraciones
-    let cleanText = rawContent.replace(/VEREDICTO:.*\n?/i, '').trim();
-
-    return { veredicto, cleanText };
+    return data.candidates[0].content.parts[0].text.trim();
 }
 
-function appendAudioResultRow(studentName, audioUrl, veredicto, feedbackText) {
-    let badgeClass = "badge-parcial";
-    if (veredicto === "CUMPLE TOTALMENTE") badgeClass = "badge-total";
-    if (veredicto === "NO CUMPLE" || veredicto === "ERROR") badgeClass = "badge-no";
-
+function appendAudioResultRow(studentName, audioUrl, feedbackText) {
     const tr = document.createElement('tr');
     const formattedFeedback = feedbackText.replace(/\n/g, '<br>');
     
     const audioControlHTML = audioUrl ? `<audio src="${audioUrl}" controls></audio>` : `<span>N/A</span>`;
 
+    // Se eliminó por completo la celda del Veredicto en el HTML dinámico
     tr.innerHTML = `
         <td><strong>${studentName}</strong></td>
         <td>${audioControlHTML}</td>
-        <td><span class="badge ${badgeClass}">${veredicto}</span></td>
         <td class="feedback-text">${formattedFeedback}</td>
         <td><button class="btn-copy-row">Copiar</button></td>
     `;
 
     tr.querySelector('.btn-copy-row').addEventListener('click', async () => {
         try {
-            const copyContent = `Estudiante: ${studentName}\nVeredicto: ${veredicto}\n\n${feedbackText}`;
+            const copyContent = `Estudiante: ${studentName}\n\n${feedbackText}`;
             await navigator.clipboard.writeText(copyContent);
             alert(`Feedback de ${studentName} copiado.`);
         } catch (err) {
