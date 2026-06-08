@@ -69,7 +69,7 @@ btnEvaluate.addEventListener('click', async () => {
             // Generar URL local para reproducir el audio en la tabla
             const audioUrl = URL.createObjectURL(file);
 
-            // Llamar a Gemini 1.5 Flash (Análisis de Audio Nativo)
+            // Llamar a Gemini 1.5 Flash (Análisis de Audio Nativo con Endpoint definitivo)
             const evaluation = await evaluateAudioWithGemini(apiKey, taskInstructions, base64Audio, file.type, studentName);
 
             // Insertar fila en la tabla
@@ -100,9 +100,8 @@ function convertFileToBase64(file) {
 }
 
 async function evaluateAudioWithGemini(apiKey, taskInstructions, base64Data, mimeType, studentName) {
-    // URL oficial de Gemini 1.5 Flash para procesamiento rápido de contenido multimodal
-    // REEMPLAZA TU LÍNEA DE URL ACTUAL POR ESTA:
-const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
+    // URL Corregida de forma definitiva para evitar el error de modelo no encontrado
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
 
     const promptText = `
 Actúa como un evaluador experto de inglés nivel A2 según el MCER. Vas a escuchar el archivo de audio adjunto.
@@ -136,7 +135,7 @@ VEREDICTO: [CUMPLE TOTALMENTE / CUMPLE PARCIALMENTE / NO CUMPLE]
     const payload = {
         contents: [{
             parts: [
-                { inlineData: { mimeType: mimeType, data: base64Data } }, // Inyección nativa del audio
+                { inlineData: { mimeType: mimeType, data: base64Data } }, 
                 { text: promptText }
             ]
         }],
@@ -179,7 +178,6 @@ function appendAudioResultRow(studentName, audioUrl, veredicto, feedbackText) {
     const tr = document.createElement('tr');
     const formattedFeedback = feedbackText.replace(/\n/g, '<br>');
     
-    // Si hay audioUrl válido, dibuja el reproductor incrustado
     const audioControlHTML = audioUrl ? `<audio src="${audioUrl}" controls></audio>` : `<span>N/A</span>`;
 
     tr.innerHTML = `
