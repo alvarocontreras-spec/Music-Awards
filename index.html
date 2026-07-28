@@ -1,237 +1,367 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oxford Audio Bulk Evaluator - Gemini A2</title>
-    <style>
-        /* --- ESTILOS CORPORATIVOS OXFORD --- */
-        body {
-            background-color: #F9F9FB;
-            color: #333333;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-        }
 
-        .container {
-            background-color: #FFFFFF;
-            max-width: 950px;
-            width: 100%;
-            border: 1px solid #E6E8EC;
-            border-radius: 8px;
-            padding: 30px;
-            box-shadow: 0 4px 12px rgba(0, 33, 71, 0.05);
-        }
+    <title>Music Awards | Unit 4 Homework</title>
 
-        h1 {
-            color: #002147; /* Azul Oxford */
-            font-size: 24px;
-            border-bottom: 2px solid #007399;
-            padding-bottom: 10px;
-            margin-top: 0;
-        }
+    <link rel="stylesheet" href="css/style.css">
 
-        h3 {
-            color: #002147;
-            margin-top: 25px;
-            margin-bottom: 10px;
-        }
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-        .form-group {
-            margin-bottom: 20px;
-        }
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-        label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 6px;
-            color: #4A5568;
-        }
-
-        input[type="password"], textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #CBD5E1;
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-family: inherit;
-        }
-
-        textarea {
-            height: 90px;
-            resize: vertical;
-        }
-
-        /* --- ZONA DROPZONE AUDIO --- */
-        .dropzone {
-            border: 2px dashed #007399;
-            padding: 30px;
-            text-align: center;
-            background-color: #F0F8FF;
-            border-radius: 6px;
-            cursor: pointer;
-            color: #002147;
-            font-weight: 600;
-            transition: background 0.2s ease;
-        }
-
-        .dropzone:hover {
-            background-color: #E1F0FA;
-        }
-
-        #fileList {
-            margin-top: 10px;
-            font-size: 14px;
-            color: #4A5568;
-            max-height: 120px;
-            overflow-y: auto;
-            background: #F1F5F9;
-            padding: 8px;
-            border-radius: 4px;
-        }
-
-        /* --- BOTONES --- */
-        button {
-            padding: 12px 20px;
-            font-size: 15px;
-            font-weight: 600;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        #btnEvaluate {
-            background-color: #007399; /* Celeste Oxford */
-            color: #FFFFFF;
-            width: 100%;
-            box-shadow: 0 2px 6px rgba(0, 115, 153, 0.2);
-        }
-
-        #btnEvaluate:hover:not(:disabled) {
-            background-color: #005A78;
-        }
-
-        button:disabled {
-            background-color: #E2E8F0 !important;
-            color: #94A3B8 !important;
-            cursor: not-allowed;
-        }
-
-        #status {
-            font-size: 14px;
-            color: #007399;
-            font-weight: 600;
-            margin-top: 15px;
-        }
-
-        /* --- TABLA DE REPORTES MASIVOS --- */
-        .results-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        .results-table th, .results-table td {
-            border: 1px solid #E2E8F0;
-            padding: 12px;
-            text-align: left;
-            vertical-align: top;
-        }
-
-        .results-table th {
-            background-color: #002147;
-            color: #FFFFFF;
-        }
-
-        .results-table tr:nth-child(even) {
-            background-color: #F8FAFC;
-        }
-
-        .badge {
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-weight: bold;
-            font-size: 12px;
-            display: inline-block;
-        }
-
-        .badge-total { background-color: #E8F5E9; color: #1E4620; }
-        .badge-parcial { background-color: #FFF3E0; color: #795548; }
-        .badge-no { background-color: #FFEBEE; color: #5C0000; }
-
-        .feedback-text {
-            font-size: 14px;
-            white-space: pre-line;
-            line-height: 1.5;
-        }
-
-        audio {
-            width: 160px;
-            height: 30px;
-        }
-
-        .btn-copy-row {
-            background-color: #F0F4F8;
-            color: #002147;
-            border: 1px solid #002147;
-            padding: 6px 12px;
-            font-size: 12px;
-        }
-
-        .btn-copy-row:hover {
-            background-color: #E1E8F0;
-        }
-    </style>
 </head>
+
 <body>
 
-<div class="container">
-    <h1>Oxford Audio Bulk Evaluator (Nivel A2 - Gemini AI)</h1>
-    
-    <div class="form-group">
-        <label for="apiKey">Google Gemini API Key:</label>
-        <input type="password" id="apiKey" placeholder="AIzaSy...">
-        <small style="color: #64748B;">*Nota: Este repositorio utiliza una clave de Google AI Studio (Gemini), no de OpenAI.</small>
-    </div>
+<header>
 
-    <div class="form-group">
-        <label for="taskInstructions">Instrucciones de la Tarea Oral (Task):</label>
-        <textarea id="taskInstructions" placeholder="Ej. Talk about your favorite food and explain how to prepare it..."></textarea>
-    </div>
+    <h1>🏆 Music Awards</h1>
 
-    <div class="form-group">
-        <label>Subir audios de los estudiantes (.mp3, .wav, .m4a, .webm):</label>
-        <div class="dropzone" onclick="document.getElementById('fileInput').click()">
-            Arrastra aquí los archivos de audio o haz clic para seleccionar
-        </div>
-        <input type="file" id="fileInput" accept="audio/*" multiple style="display: none;">
-        <div id="fileList" class="hidden">No hay archivos seleccionados</div>
-    </div>
+    <p>Unit 4 • Comparatives & Superlatives</p>
 
-    <button id="btnEvaluate" disabled>Iniciar Evaluación Masiva de Audio</button>
-    <p id="status">Estado: Listo. Configura la tarea y sube los audios.</p>
+</header>
 
-    <div id="resultBox" class="hidden">
-        <h3>📊 Reporte de Evaluaciones Auditivas Nativa</h3>
-        <table class="results-table">
-            <thead>
-    <tr>
-        <th style="width: 20%;">Estudiante</th>
-        <th style="width: 20%;">Escuchar</th>
-        <th style="width: 50%;">Feedback (3 Oraciones)</th>
-        <th style="width: 10%;">Acción</th>
-    </tr>
-</thead>
-            <tbody id="resultsTableBody">
-                </tbody>
-        </table>
-    </div>
+<main>
+
+<!-- ========================= -->
+<!-- STUDENT INFORMATION -->
+<!-- ========================= -->
+
+<section class="card">
+
+<h2>👤 Student Information</h2>
+
+<div class="student-grid">
+
+<div>
+
+<label>Class</label>
+
+<select id="course">
+
+<option value="">Select your class</option>
+
+<option value="5thA">5th A</option>
+
+<option value="5thB">5th B</option>
+
+<option value="5thC">5th C</option>
+
+</select>
+
 </div>
 
-<script src="app.js"></script>
+<div>
+
+<label>Student</label>
+
+<select id="student">
+
+<option value="">Select your name</option>
+
+</select>
+
+</div>
+
+</div>
+
+<button id="startButton">
+
+Start Homework
+
+</button>
+
+</section>
+
+<!-- ========================= -->
+
+<section id="homework" class="hidden">
+
+<!-- ========================= -->
+<!-- LISTEN -->
+<!-- ========================= -->
+
+<section class="card">
+
+<h2>🎧 Listen</h2>
+
+<p>
+Listen to both songs before answering.
+</p>
+
+<div class="songs">
+
+<div class="song">
+
+<h3>Taylor Swift</h3>
+
+<p>Shake It Off</p>
+
+<iframe
+width="100%"
+height="250"
+src="https://www.youtube.com/embed/nfWlot6h_JM"
+title="YouTube"
+allowfullscreen>
+</iframe>
+
+</div>
+
+<div class="song">
+
+<h3>Bruno Mars</h3>
+
+<p>Count on Me</p>
+
+<iframe
+width="100%"
+height="250"
+src="https://www.youtube.com/embed/MpLHIvCQEek"
+title="YouTube"
+allowfullscreen>
+</iframe>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- ========================= -->
+<!-- MUSIC AWARDS -->
+<!-- ========================= -->
+
+<section class="card">
+
+<h2>🏆 Music Awards</h2>
+
+<div class="question">
+
+<h3>Who is the best singer?</h3>
+
+<label><input type="radio" name="bestSinger"> Taylor Swift</label>
+
+<label><input type="radio" name="bestSinger"> Bruno Mars</label>
+
+</div>
+
+<div class="question">
+
+<h3>Which song is the most exciting?</h3>
+
+<label><input type="radio" name="song"> Shake It Off</label>
+
+<label><input type="radio" name="song"> Count on Me</label>
+
+</div>
+
+<div class="question">
+
+<h3>Who is more popular?</h3>
+
+<label><input type="radio" name="popular"> Taylor Swift</label>
+
+<label><input type="radio" name="popular"> Bruno Mars</label>
+
+</div>
+
+</section>
+
+<!-- ========================= -->
+<!-- WORD BANK -->
+<!-- ========================= -->
+
+<section class="card">
+
+<h2>📚 Word Bank</h2>
+
+<div id="wordBank">
+
+<button class="word">better</button>
+
+<button class="word">best</button>
+
+<button class="word">more popular</button>
+
+<button class="word">the most popular</button>
+
+<button class="word">more talented</button>
+
+<button class="word">the most talented</button>
+
+<button class="word">more exciting</button>
+
+<button class="word">the most exciting</button>
+
+<button class="word">also</button>
+
+<button class="word">moreover</button>
+
+<button class="word">because</button>
+
+<button class="word">I think</button>
+
+<button class="word">In my opinion</button>
+
+</div>
+
+</section>
+
+<!-- ========================= -->
+<!-- WRITING -->
+<!-- ========================= -->
+
+<section class="card">
+
+<h2>✍️ Writing</h2>
+
+<div class="writing-layout">
+
+<div class="planner">
+
+<h3>Checklist</h3>
+
+<ul>
+
+<li id="wordsCheck">⬜ 45 words</li>
+
+<li id="comparativeCheck">⬜ Comparative</li>
+
+<li id="superlativeCheck">⬜ Superlative</li>
+
+<li id="connectorCheck">⬜ Connector</li>
+
+</ul>
+
+</div>
+
+<div>
+
+<textarea
+id="writing"
+placeholder="Write your paragraph here..."></textarea>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- ========================= -->
+<!-- PROGRESS -->
+<!-- ========================= -->
+
+<section class="card">
+
+<h2>📊 Progress</h2>
+
+<div class="progress">
+
+<div>
+
+Words
+
+<span id="wordCounter">
+
+0
+
+</span>
+
+</div>
+
+<div>
+
+Comparatives
+
+<span id="comparativeCounter">
+
+0
+
+</span>
+
+</div>
+
+<div>
+
+Superlatives
+
+<span id="superlativeCounter">
+
+0
+
+</span>
+
+</div>
+
+<div>
+
+Connectors
+
+<span id="connectorCounter">
+
+0
+
+</span>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- ========================= -->
+
+<section class="card">
+
+<h2>👀 Preview</h2>
+
+<article id="preview">
+
+Your paragraph will appear here.
+
+</article>
+
+</section>
+
+<!-- ========================= -->
+
+<section class="buttons">
+
+<button id="reviewButton">
+
+Review
+
+</button>
+
+<button id="submitButton">
+
+Submit Homework
+
+</button>
+
+</section>
+
+</section>
+
+</main>
+
+<footer>
+
+Music Awards Homework © 2026
+
+</footer>
+
+<script src="js/students.js"></script>
+<script src="js/songs.js"></script>
+<script src="js/review.js"></script>
+<script src="js/app.js"></script>
+
 </body>
+
 </html>
