@@ -1,22 +1,17 @@
 const songs = [
+
 {
-artist:"Taylor Swift",
-song:"Shake It Off",
-video:"https://www.youtube.com/embed/nfWlot6h_JM",
-adjectives:[
-"popular",
-"talented",
-"famous"
-]
+    artist:"Taylor Swift",
+    title:"Shake It Off",
+    youtube:"https://www.youtube.com/embed/nfWlot6h_JM",
+    image:"assets/taylor.jpg"
 },
+
 {
-artist:"Bruno Mars",
-song:"Count on Me",
-video:"https://www.youtube.com/embed/MpLHIvCQEek",
-adjectives:[
-"friendly",
-"good",
-"relaxing"
-]
+    artist:"Bruno Mars",
+    title:"Count on Me",
+    youtube:"https://www.youtube.com/embed/MpLHIvCQEek",
+    image:"assets/bruno.jpg"
 }
+
 ];
